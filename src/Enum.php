@@ -112,10 +112,10 @@ abstract class Enum
      *   </php>
      * </code>
      *
-     * @param $consumer
+     * @param \Closure $consumer
      * @throws ReflectionException
      */
-    public static function forEach($consumer): void
+    public static function forEach(\Closure $consumer): void
     {
         foreach (static::values() as $key => $value) {
             $consumer($key, $value);
