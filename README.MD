@@ -13,6 +13,11 @@ composer require neutronstars/enum
 ### Method 1
 
 ```php
+/**
+ * @method static self ONE()
+ * @method static self TWO()
+ * @method static self THREE()
+ */
 class MyEnum extends \NeutronStars\Enum\Enum
 {
    public const ONE = null;
@@ -26,6 +31,11 @@ This enum does not require a constructor. We simply create a list of constants t
 ### Method 2
 
 ```php
+/**
+ * @method static self ONE()
+ * @method static self TWO()
+ * @method static self THREE()
+ */
 class MyEnum extends \NeutronStars\Enum\Enum
 {
    public const ONE   = 1;
@@ -52,6 +62,11 @@ This enum must have a constructor with a parameter (of type integer in this exam
 ### Method 3
 
 ```php
+/**
+ * @method static self ONE()
+ * @method static self TWO()
+ * @method static self THREE()
+ */
 class MyEnum extends \NeutronStars\Enum\Enum
 {
    public const ONE   = [1, 'One'];

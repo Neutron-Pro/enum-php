@@ -6,6 +6,20 @@ namespace Test\Enums;
 
 use NeutronStars\Enum\Enum;
 
+/**
+ * @method static self GET()
+ * @method static self POST()
+ * @method static self PUT()
+ * @method static self PATCH()
+ * @method static self DELETE()
+ * @method static self HEAD()
+ * @method static self OPTIONS()
+ * @method static self CONNECT()
+ * @method static self TRACE()
+ *
+ * Class HTTPMethod
+ * @package Test\Enums
+ */
 class HTTPMethod extends Enum
 {
     public const GET = null;

@@ -6,6 +6,14 @@ namespace Test\Enums;
 
 use NeutronStars\Enum\Enum;
 
+/**
+ *
+ * @method static self JOHN_DOE()
+ * @method static self MIKE_BROWN()
+ *
+ * Class Users
+ * @package Test\Enums
+ */
 class Users extends Enum
 {
     public const JOHN_DOE   = ['John', 'Doe', 18, false];

@@ -6,6 +6,15 @@ namespace Test\Enums;
 
 use NeutronStars\Enum\Enum;
 
+/**
+ * @method static self EN()
+ * @method static self FR()
+ * @method static self DE()
+ * @method static self ES()
+ *
+ * Class Language
+ * @package Test\Enums
+ */
 class Language extends Enum
 {
     public const EN = 'English';
