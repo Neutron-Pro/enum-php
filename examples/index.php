@@ -5,17 +5,20 @@ use Test\Enums\Language;
 use Test\Enums\Users;
 use Test\Enums\HTTPMethod;
 
+echo '<style>body { background-color: #232121; color: #d5d5d5;} h2 {color: #d57e0a} strong { color: #1cb848} .divider {border-top: 1px solid white; margin: 2rem 0}</style>';
+
 echo '<h2>Language list</h2>';
 
+echo '<p><strong>Default Language: </strong> '. Language::_DEFAULT()->getName() .'</p>';
+
 Language::forEach(function ($name, $instance) {
-    echo "<p>{$name}: {$instance->getName()}</p>";
+    echo "<p><strong>{$name}</strong>: {$instance->getName()}</p>";
 });
 
-/** @var Language $french */
 $french = Language::FR();
 
 if (!$french->equals(Language::DE())) {
-    echo '<p>French is not DE !</p>';
+    echo '<p>French is not <strong>DE</strong> !</p>';
 }
 
 if (!$french->equals(Language::FR())) {
@@ -24,7 +27,7 @@ if (!$french->equals(Language::FR())) {
 
 echo '<p>' . Language::valueOf('EN')->getName() . '</p>';
 
-echo '<p>----------------------------</p>';
+echo '<div class="divider"></div>';
 
 echo '<h2>Users list</h2>';
 
@@ -32,8 +35,10 @@ Users::forEach(function ($name, $instance) {
     echo "<p><strong>{$name}</strong>: {$instance->getFirstName()} {$instance->getLastName()}, {$instance->getAge()} year old [". ($instance->isVip() ? 'VIP' : 'NO VIP') . "]</p>";
 });
 
+echo '<div class="divider"></div>';
+
 echo '<h2>HTTP Method</h2>';
 
 HTTPMethod::forEach(function ($name, $instance) {
-    echo "<p>{$name}</p>";
+    echo "<p><strong>{$name}</strong></p>";
 });

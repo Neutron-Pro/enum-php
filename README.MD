@@ -174,3 +174,50 @@ if ($value->equals(MyEnum::ONE())) {
 if $_GET['number] is ONE then 'The number is ONE !'
 else nothing.
 ```
+
+## Default enum value:
+
+It is possible to create a constant to retrieve the value of an enumeration if it is not found.
+
+```php
+/**
+ * @method static self _DEFAULT()
+ * @method static self ONE()
+ * @method static self TWO()
+ * @method static self THREE()
+ */
+class MyEnum extends \NeutronStars\Enum\Enum
+{
+   public const _DEFAULT = 'TWO';
+
+   public const ONE = null;
+   public const TWO = null;
+   public const THREE = null;
+}
+```
+
+### Get the value of _DEFAULT
+
+```php
+echo 'Default value: ' . MyEnum::_DEFAULT();
+```
+
+- Result:
+
+```
+Default value: TWO
+```
+
+### Get the value of _DEFAULT with the valueOf function
+
+```php
+echo 'Default value: ' . MyEnum::valueOf('_DEFAULT');
+// OR
+echo 'Default value: ' . MyEnum::valueOf('A key that does not exist.');
+```
+
+- Result:
+
+```
+Default value: TWO
+```

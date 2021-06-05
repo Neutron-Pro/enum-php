@@ -7,6 +7,7 @@ namespace Test\Enums;
 use NeutronStars\Enum\Enum;
 
 /**
+ * @method static self _DEFAULT()
  * @method static self EN()
  * @method static self FR()
  * @method static self DE()
@@ -17,6 +18,8 @@ use NeutronStars\Enum\Enum;
  */
 class Language extends Enum
 {
+    public const _DEFAULT = 'EN';
+
     public const EN = 'English';
     public const FR = 'French';
     public const DE = 'Germany';

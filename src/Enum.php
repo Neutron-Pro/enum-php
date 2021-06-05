@@ -73,6 +73,22 @@ abstract class Enum
     public static function valueOf(string $key): ?Enum
     {
         $reflect = new \ReflectionClass(static::class);
+        if (!$reflect->hasConstant($key)) {
+            if ($key !== '_DEFAULT' && $reflect->hasConstant('_DEFAULT')) {
+                return static::valueOf('_DEFAULT');
+            }
+            throw new ReflectionException(
+                'Can\'t find the constant of ' . $key . ' value in ' . static::class . '.'
+            );
+        }
+        if ($key === '_DEFAULT') {
+            $key = $reflect->getConstant($key);
+            if (!is_string($key) || !$reflect->hasConstant($key)) {
+                throw new ReflectionException(
+                    'Can\'t find the constant of _DEFAULT value in ' . static::class . '.'
+                );
+            }
+        }
         $values = $reflect->getConstant($key);
         if (!is_array($values)) {
             $values = $values === null ? [] : [$values];
@@ -91,10 +107,12 @@ abstract class Enum
         $reflect = new \ReflectionClass(static::class);
         $enum = [];
         foreach ($reflect->getConstants() as $key => $values) {
-            if (!is_array($values)) {
-                $values = $values === null ? [] : [$values];
+            if ($key !== '_DEFAULT') {
+                if (!is_array($values)) {
+                    $values = $values === null ? [] : [$values];
+                }
+                $enum[$key] = $reflect->newInstance(...$values)->setEnumKey($key);
             }
-            $enum[$key] = $reflect->newInstance(...$values)->setEnumKey($key);
         }
         return $enum;
     }
