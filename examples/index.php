@@ -31,6 +31,8 @@ echo '<div class="divider"></div>';
 
 echo '<h2>Users list</h2>';
 
+echo '<p><strong>Default User:</strong> ' . Users::valueOf('_DEFAULT') . '</p>';
+
 Users::forEach(function ($name, $instance) {
     echo "<p><strong>{$name}</strong>: {$instance->getFirstName()} {$instance->getLastName()}, {$instance->getAge()} year old [". ($instance->isVip() ? 'VIP' : 'NO VIP') . "]</p>";
 });
@@ -38,6 +40,8 @@ Users::forEach(function ($name, $instance) {
 echo '<div class="divider"></div>';
 
 echo '<h2>HTTP Method</h2>';
+
+echo '<p><strong>Default Method:</strong> ' . HTTPMethod::valueOf('_DEFAULT') . '</p>';
 
 HTTPMethod::forEach(function ($name, $instance) {
     echo "<p><strong>{$name}</strong></p>";
