@@ -73,33 +73,17 @@ abstract class Enum
     public static function valueOf(string $key): ?Enum
     {
         $reflect = new \ReflectionClass(static::class);
-        if (!$reflect->hasConstant($key)) {
-            if ($key !== '_DEFAULT' && $reflect->hasConstant('_DEFAULT')) {
-                return static::valueOf('_DEFAULT');
-            }
-            if (($default = array_keys($reflect->getConstants())[0] ?? null) !== null) {
-                return static::valueOf($default);
-            }
-            throw new ReflectionException(
-                'Can\'t find the constant of ' . $key . ' value in ' . static::class . '.'
-            );
+        if ($key === '_DEFAULT' && ($default = true) && $reflect->hasConstant($key)) {
+            $key = (string) $reflect->getConstant('_DEFAULT');
         }
-        if ($key === '_DEFAULT') {
-            $key = $reflect->getConstant($key);
-            if (!is_string($key) || !$reflect->hasConstant($key)) {
-                if (($default = array_keys($reflect->getConstants())[0] ?? null) !== null) {
-                    return static::valueOf($default);
-                }
-                throw new ReflectionException(
-                    'Can\'t find the constant of _DEFAULT value in ' . static::class . '.'
-                );
+        if ($reflect->hasConstant($key)) {
+            $values = $reflect->getConstant($key);
+            if (!is_array($values)) {
+                $values = $values === null ? [] : [$values];
             }
+            return $reflect->newInstance(...$values)->setEnumKey($key);
         }
-        $values = $reflect->getConstant($key);
-        if (!is_array($values)) {
-            $values = $values === null ? [] : [$values];
-        }
-        return $reflect->newInstance(...$values)->setEnumKey($key);
+        return !($default ?? false) ? static::valueOf('_DEFAULT') : static::getFirstValue();
     }
 
     /**
@@ -121,6 +105,20 @@ abstract class Enum
             }
         }
         return $enum;
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    public static function getFirstValue(): Enum
+    {
+        $reflect = new \ReflectionClass(static::class);
+        if (($default = array_keys($reflect->getConstants())[0] ?? null) !== null) {
+            return static::valueOf($default);
+        }
+        throw new ReflectionException(
+            'Can\'t find the constant of _DEFAULT value in ' . static::class . '.'
+        );
     }
 
     /**
