@@ -8,20 +8,6 @@ composer require neutronstars/enum
 
 ---
 
-## Doctrine Configuration
-
-If you are using you must add this to the `doctrine.yaml` configuration file:
-
-```yml
-doctrine:
-  dbal:
-    types:
-      ns_enum:
-        class: NeutronStars\Enum\Types\EnumType
-```
-
----
-
 ## How create an Enum class:
 
 ### Method 1
@@ -235,3 +221,39 @@ echo 'Default value: ' . MyEnum::valueOf('A key that does not exist.');
 ```
 Default value: TWO
 ```
+
+---
+
+## Doctrine Configuration
+
+If you use it, you must create a Type class for your enum:
+
+```php
+namespace App\Types;
+
+class MyEnumType extends \NeutronStars\Enum\Types\EnumType {
+  public const MY_ENUM = 'my_enum';
+  
+  public function getName(): string
+  {
+    return self::MY_ENUM;
+  }
+  
+  public function convertToPHPValue($value,\Doctrine\DBAL\Platforms\AbstractPlatform $platform): MyEnum
+  {
+    return MyEnum::valueOf($value);
+  }
+}
+```
+
+And you must add this to the `doctrine.yaml` configuration file:
+
+```yml
+doctrine:
+  dbal:
+    types:
+      my_enum:
+        class: App\Types\MyEnumType
+```
+
+---
