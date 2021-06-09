@@ -12,7 +12,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": "^7.1 | ^8.0",
-        "doctrine/dbal": "^3.1",
+        "doctrine/dbal": "^2.1",
         "symfony/serializer": "^5.2"
     },
     "autoload": {
