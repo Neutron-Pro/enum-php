@@ -11,13 +11,12 @@ use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class EnumNormalizer implements NormalizableInterface, DenormalizableInterface
+class EnumNormalizer implements NormalizerInterface, DenormalizerInterface
 {
     /** @var string $className */
     private $className;
 
     /**
-     * EnumNormalizer constructor.
      * @param string|null $className
      * @throws NotNormalizableValueException
      */
@@ -30,29 +29,40 @@ class EnumNormalizer implements NormalizableInterface, DenormalizableInterface
         }
     }
 
+
+    public function supportsNormalization($data, string $format = null): bool
+    {
+        return is_a($data, Enum::class, true);
+    }
+
     /**
-     * @param NormalizerInterface $normalizer
+     * @param mixed $object
      * @param string|null $format
      * @param array $context
      * @return string|null
      */
-    public function normalize(NormalizerInterface $normalizer, string $format = null, array $context = []): ?string
+    public function normalize($object, string $format = null, array $context = []): ?string
     {
-        if ($normalizer instanceof Enum) {
-            return (string) $normalizer;
+        if ($object instanceof Enum) {
+            return (string) $object;
         }
         return null;
     }
 
-    /**
-     * @param DenormalizerInterface       $denormalizer
-     * @param array|string|int|float|bool $data
-     * @param string|null                 $format
-     * @param array                       $context
-     */
-    public function denormalize(DenormalizerInterface $denormalizer, $data,
-        string $format = null, array $context = []): object
+    public function supportsDenormalization($data, string $type, string $format = null): bool
     {
-        return $this->className::valueOf($denormalizer);
+        return is_a($type, Enum::class, true);
+    }
+
+    /**
+     * @param mixed $data
+     * @param string $type
+     * @param string|null $format
+     * @param array $context
+     * @return object
+     */
+    public function denormalize($data, string $type, string $format = null, array $context = [])
+    {
+        return $this->className::valueOf($data);
     }
 }
