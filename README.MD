@@ -8,6 +8,20 @@ composer require neutronstars/enum
 
 ---
 
+## Doctrine Configuration
+
+If you are using you must add this to the `doctrine.yaml` configuration file:
+
+```yml
+doctrine:
+  dbal:
+    types:
+      ns_enum:
+        class: NeutronStars\Enum\Types\EnumType
+```
+
+---
+
 ## How create an Enum class:
 
 ### Method 1
