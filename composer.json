@@ -13,11 +13,21 @@
     "require": {
         "php": "^7.1 | ^8.0",
         "doctrine/dbal": "^2.1",
-        "symfony/serializer": "^5.2"
+        "symfony/serializer": "^5.2",
+        "ext-mbstring": "*",
+        "ext-operator": "*"
     },
     "autoload": {
         "psr-4": {
             "NeutronStars\\Enum\\": "src/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "NeutronStars\\Enum\\Test\\": "test/"
         }
     }
 }
