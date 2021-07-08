@@ -19,6 +19,9 @@ use ReflectionException;
  */
 abstract class Enum implements \Serializable
 {
+    /** @var Enum[][] */
+    private static $cases = [];
+
     /**
      * Name of the constant.
      * @var string
@@ -49,7 +52,7 @@ abstract class Enum implements \Serializable
 
     public function __isset($name): bool
     {
-        return true;
+        return $name === 'key' || $name === 'value';
     }
 
     /**
@@ -130,28 +133,22 @@ abstract class Enum implements \Serializable
      */
     public static function tryFrom($key): ?Enum
     {
-        $reflect = new \ReflectionClass(static::class);
-        if ($reflect->hasConstant((string) $key)) {
-            $values = $reflect->getConstant($key);
-
-            if (!is_array($values)) {
-                $values = $values === null ? [] : [$values];
-            }
-            return $reflect
-                ->newInstance(...($reflect->getConstructor() ? $values : []))
-                ->setEnumKey($key)
-                ->setEnumValue($reflect->getConstant($key));
-        }
         $cases = static::cases();
-        if (!empty($cases[$key])) {
-            return $cases[$key];
+        if (is_numeric($key) && !empty($cases[(int) $key - 1])) {
+            return $cases[(int) $key - 1];
         }
+        $value = null;
+        $count = 0;
         foreach ($cases as $case) {
-            if ($key === $case->value) {
+            if (($key instanceof self ? $key->key : $key) === $case->key) {
                 return $case;
             }
+            if ($key === $case->value) {
+                $count++;
+                $value = $case;
+            }
         }
-        return null;
+        return $count === 1 ? $value : null;
     }
 
     /**
@@ -162,19 +159,21 @@ abstract class Enum implements \Serializable
      */
     public static function cases(): array
     {
-        $reflect = new \ReflectionClass(static::class);
-        $enum = [0 => null];
-        foreach ($reflect->getConstants() as $key => $values) {
-            $valuesParams = $values;
-            if (!is_array($valuesParams)) {
-                $valuesParams = $valuesParams === null ? [] : [$valuesParams];
+        if (empty(static::$cases[static::class])) {
+            $reflect = new \ReflectionClass(static::class);
+            $enum = [];
+            foreach ($reflect->getConstants() as $key => $values) {
+                $valuesParams = $values;
+                if (!is_array($valuesParams)) {
+                    $valuesParams = $valuesParams === null ? [] : [$valuesParams];
+                }
+                $enum[] = $reflect->newInstance(...($reflect->getConstructor() ? $valuesParams : []))
+                    ->setEnumKey($key)
+                    ->setEnumValue($values);
             }
-            $enum[] = $reflect->newInstance(...($reflect->getConstructor() ? $valuesParams : []))
-                ->setEnumKey($key)
-                ->setEnumValue($values);
+            static::$cases[static::class] = $enum;
         }
-        unset($enum[0]);
-        return $enum;
+        return static::$cases[static::class];
     }
 
     public function serialize(): string
