@@ -134,9 +134,6 @@ abstract class Enum implements \Serializable
     public static function tryFrom($key): ?Enum
     {
         $cases = static::cases();
-        if (is_numeric($key) && !empty($cases[(int) $key - 1])) {
-            return $cases[(int) $key - 1];
-        }
         $value = null;
         $count = 0;
         foreach ($cases as $case) {
@@ -148,7 +145,13 @@ abstract class Enum implements \Serializable
                 $value = $case;
             }
         }
-        return $count === 1 ? $value : null;
+        if ($count === 1) {
+            return $value;
+        }
+        if (is_numeric($key) && !empty($cases[(int) $key - 1])) {
+            return $cases[(int) $key - 1];
+        }
+        return null;
     }
 
     /**
