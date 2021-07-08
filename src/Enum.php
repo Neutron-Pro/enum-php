@@ -20,7 +20,7 @@ use ReflectionException;
 abstract class Enum implements \Serializable
 {
     /** @var Enum[][] */
-    private static $cases = [];
+    protected static $cases = [];
 
     /**
      * Name of the constant.
