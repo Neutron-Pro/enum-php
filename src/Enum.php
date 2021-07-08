@@ -4,21 +4,56 @@ declare(strict_types=1);
 
 namespace NeutronStars\Enum;
 
+use InvalidArgumentException;
+use NeutronStars\Enum\Error\ValueError;
 use ReflectionException;
 
 /**
  * The class has inherited to create new enumerations.
  *
+ *
+ * @property string key;
+ * @property mixed value;
  * Class Enum
  * @package NeutronStars\Enum
  */
-abstract class Enum
+abstract class Enum implements \Serializable
 {
+    /** @var Enum[][] */
+    private static $cases = [];
+
     /**
      * Name of the constant.
      * @var string
      */
     private $enumKey;
+
+    /**
+     * Value of the constant.
+     */
+    private $enumValue;
+
+    /** @return mixed */
+    public function __get($name)
+    {
+        switch ($name) {
+            case 'key':
+                return $this->enumKey;
+            case 'value':
+                return $this->enumValue;
+        }
+        throw new InvalidArgumentException('Invalid property: ' . static::class . '->' . $name);
+    }
+
+    public function __set($name, $value): void
+    {
+        throw new InvalidArgumentException('Can\'t set property: ' . static::class . '->' . $name);
+    }
+
+    public function __isset($name): bool
+    {
+        return $name === 'key' || $name === 'value';
+    }
 
     /**
      * Set the name of the constant when the object is initialized.
@@ -29,6 +64,18 @@ abstract class Enum
     private function setEnumKey(string $enumKey): self
     {
         $this->enumKey = $enumKey;
+        return $this;
+    }
+
+    /**
+     * Set the name of the constant when the object is initialized.
+     *
+     * @param mixed $enumValue
+     * @return $this
+     */
+    private function setEnumValue($enumValue): self
+    {
+        $this->enumValue = $enumValue;
         return $this;
     }
 
@@ -57,33 +104,51 @@ abstract class Enum
      * Retrieves the instance of the selected enumeration.
      *
      * @throws ReflectionException
+     * @throws ValueError
      */
     public static function __callStatic(string $name, array $arguments)
     {
-        return static::valueOf($name);
+        return static::from($name);
+    }
+
+
+    /**
+     * @throws ReflectionException
+     * @throws ValueError
+     */
+    public static function from($key): Enum
+    {
+        if (($enum = static::tryFrom($key)) !== null) {
+            return $enum;
+        }
+        throw new ValueError('Can\'t find the value <' . $key . '> of ' . static::class . '.');
     }
 
     /**
      * Retrieves the instance of the enumeration according to its name.
      *
-     * @param string $key
+     * @param mixed $key
      * @return Enum|null
      * @throws ReflectionException
      */
-    public static function valueOf(string $key): ?Enum
+    public static function tryFrom($key): ?Enum
     {
-        $reflect = new \ReflectionClass(static::class);
-        if ($key === '_DEFAULT' && ($default = true) && $reflect->hasConstant($key)) {
-            $key = (string) $reflect->getConstant('_DEFAULT');
+        $cases = static::cases();
+        if (is_numeric($key) && !empty($cases[(int) $key - 1])) {
+            return $cases[(int) $key - 1];
         }
-        if ($reflect->hasConstant($key)) {
-            $values = $reflect->getConstant($key);
-            if (!is_array($values)) {
-                $values = $values === null ? [] : [$values];
+        $value = null;
+        $count = 0;
+        foreach ($cases as $case) {
+            if (($key instanceof self ? $key->key : $key) === $case->key) {
+                return $case;
             }
-            return $reflect->newInstance(...$values)->setEnumKey($key);
+            if ($key === $case->value) {
+                $count++;
+                $value = $case;
+            }
         }
-        return !($default ?? false) ? static::valueOf('_DEFAULT') : static::getFirstValue();
+        return $count === 1 ? $value : null;
     }
 
     /**
@@ -92,55 +157,35 @@ abstract class Enum
      * @return Enum[]
      * @throws ReflectionException
      */
-    public static function values(): array
+    public static function cases(): array
     {
-        $reflect = new \ReflectionClass(static::class);
-        $enum = [];
-        foreach ($reflect->getConstants() as $key => $values) {
-            if ($key !== '_DEFAULT') {
-                if (!is_array($values)) {
-                    $values = $values === null ? [] : [$values];
+        if (empty(static::$cases[static::class])) {
+            $reflect = new \ReflectionClass(static::class);
+            $enum = [];
+            foreach ($reflect->getConstants() as $key => $values) {
+                $valuesParams = $values;
+                if (!is_array($valuesParams)) {
+                    $valuesParams = $valuesParams === null ? [] : [$valuesParams];
                 }
-                $enum[$key] = $reflect->newInstance(...$values)->setEnumKey($key);
+                $enum[] = $reflect->newInstance(...($reflect->getConstructor() ? $valuesParams : []))
+                    ->setEnumKey($key)
+                    ->setEnumValue($values);
             }
+            static::$cases[static::class] = $enum;
         }
-        return $enum;
+        return static::$cases[static::class];
     }
 
-    /**
-     * @throws ReflectionException
-     */
-    public static function getFirstValue(): Enum
+    public function serialize(): string
     {
-        $reflect = new \ReflectionClass(static::class);
-        if (($default = array_keys($reflect->getConstants())[0] ?? null) !== null) {
-            return static::valueOf($default);
-        }
-        throw new ReflectionException(
-            'Can\'t find the constant of _DEFAULT value in ' . static::class . '.'
-        );
+        $serialize = (new \ReflectionClass(static::class))->getShortName() . ':' . $this->key;
+        return 'E:' . mb_strlen($serialize) . ':"' . $serialize . '"';
     }
 
-    /**
-     * Loops over each element of the enumeration and executes the consumer.
-     *
-     * <code>
-     *   <php>
-     *     CustomEnum::foreach(function ($name, $instance) {
-     *       echo 'Constant name: ' . $name . ' | Instance of Constant: <pre>';
-     *       print_r($instance);
-     *       echo '</pre>';
-     *     });
-     *   </php>
-     * </code>
-     *
-     * @param \Closure $consumer
-     * @throws ReflectionException
-     */
-    public static function forEach(\Closure $consumer): void
+    public function unserialize($data): void
     {
-        foreach (static::values() as $key => $value) {
-            $consumer($key, $value);
-        }
+        $tab = mb_split(':', $data);
+        $object = static::from(mb_substr($tab[count($tab)-1], 0, -1));
+        $this->setEnumKey($object->key)->setEnumValue($object->value);
     }
 }
