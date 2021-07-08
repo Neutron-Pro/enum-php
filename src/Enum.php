@@ -80,17 +80,6 @@ abstract class Enum implements \Serializable
     }
 
     /**
-     * Compares if the instance of the enumeration is the same as in parameter.
-     *
-     * @param Enum $enum
-     * @return bool
-     */
-    public function equals(Enum $enum): bool
-    {
-        return $this->enumKey === $enum->enumKey;
-    }
-
-    /**
      * Gets the name of the constant in a string.
      *
      * @return string
