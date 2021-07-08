@@ -6,6 +6,7 @@ namespace NeutronStars\Enum\Test;
 
 use NeutronStars\Enum\Error\ValueError;
 use NeutronStars\Enum\Test\Fixture\FooWithoutValueEnum;
+use NeutronStars\Enum\Test\Fixture\FooWithValueIntEnum;
 use NeutronStars\Enum\Test\Fixture\FooWithValueStringEnum;
 use PHPUnit\Framework\TestCase;
 
@@ -101,6 +102,20 @@ class TestEnum extends TestCase
         $this->assertNotNull(
             FooWithValueStringEnum::tryFrom(1),
             'The index did not return the FOO instance with tryFrom.'
+        );
+    }
+
+    public function testTryFromPriorityEnum(): void
+    {
+        $this->assertSame(
+            FooWithValueIntEnum::BAR(),
+            FooWithValueIntEnum::tryFrom(1),
+            'The value priority did not work.'
+        );
+        $this->assertSame(
+            FooWithValueIntEnum::FOO(),
+            FooWithValueIntEnum::tryFrom(2),
+            'The value priority did not work.'
         );
     }
 
