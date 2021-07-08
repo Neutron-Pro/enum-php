@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace NeutronStars\Enum\Test;
+namespace NeutronStars\Enum\Tests;
 
 use NeutronStars\Enum\Error\ValueError;
-use NeutronStars\Enum\Test\Fixture\FooWithoutValueEnum;
-use NeutronStars\Enum\Test\Fixture\FooWithValueIntEnum;
-use NeutronStars\Enum\Test\Fixture\FooWithValueStringEnum;
+use NeutronStars\Enum\Tests\Fixture\FooWithoutValueEnum;
+use NeutronStars\Enum\Tests\Fixture\FooWithValueIntEnum;
+use NeutronStars\Enum\Tests\Fixture\FooWithValueStringEnum;
 use PHPUnit\Framework\TestCase;
 
 class TestEnum extends TestCase

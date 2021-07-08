@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NeutronStars\Enum\Test\Fixture;
+namespace NeutronStars\Enum\Tests\Fixture;
 
 use NeutronStars\Enum\Enum;
 

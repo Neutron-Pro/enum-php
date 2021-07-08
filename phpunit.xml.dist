@@ -3,7 +3,7 @@
 <phpunit bootstrap="./vendor/autoload.php" colors="true">
     <testsuites>
         <testsuite name="EnumForPHP">
-            <directory suffix="TestEnum.php">./test</directory>
+            <directory suffix="TestEnum.php">./tests</directory>
         </testsuite>
     </testsuites>
 </phpunit>
