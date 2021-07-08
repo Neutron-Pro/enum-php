@@ -1,6 +1,6 @@
 {
     "name": "neutronstars/enum",
-    "description": "Added a simple enumeration system to PHP.",
+    "description": "Added an enumeration system as close as possible to PHP 8.1 for earlier versions.",
     "type": "library",
     "license": [ "Apache-2.0" ],
     "authors": [
