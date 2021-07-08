@@ -14,8 +14,7 @@
         "php": "^7.1 | ^8.0",
         "doctrine/dbal": "^2.1",
         "symfony/serializer": "^5.2",
-        "ext-mbstring": "*",
-        "ext-operator": "*"
+        "ext-mbstring": "*"
     },
     "autoload": {
         "psr-4": {

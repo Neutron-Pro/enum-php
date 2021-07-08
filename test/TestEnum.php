@@ -19,7 +19,7 @@ class TestEnum extends TestCase
         );
     }
 
-    public function testEqualsInstanceEnum(): void
+    public function testSameInstanceEnum(): void
     {
         $this->assertSame(
             FooWithValueStringEnum::FOO(),
@@ -28,9 +28,9 @@ class TestEnum extends TestCase
         );
     }
 
-    public function testNotEqualsInstanceEnum(): void
+    public function testNotSameInstanceEnum(): void
     {
-        $this->assertNotEquals(
+        $this->assertNotSame(
             FooWithValueStringEnum::FOO(),
             FooWithValueStringEnum::BAR(),
             'The instances are identical.'
@@ -39,7 +39,7 @@ class TestEnum extends TestCase
 
     public function testGetKeyEnum(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             'FOO',
             FooWithValueStringEnum::FOO()->key,
             'The key did not return FOO.'
@@ -48,7 +48,7 @@ class TestEnum extends TestCase
 
     public function testGetValueEnum(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             'Bar',
             FooWithValueStringEnum::BAR()->value,
             'The value did not return Bar.'
@@ -120,12 +120,34 @@ class TestEnum extends TestCase
         );
     }
 
-
-
-    public function testSerializationEnum(): void
+    public function testGetSameCases(): void
     {
-        $this->assertEquals(
-            unserialize(serialize(FooWithoutValueEnum::BAR())),
+        $this->assertSame(
+            FooWithoutValueEnum::cases(),
+            [FooWithoutValueEnum::FOO(), FooWithoutValueEnum::BAR()],
+            'The arrays are not identical.'
+        );
+    }
+
+    public function testSerializeEnum(): void
+    {
+        $this->assertSame(
+            'E:23:"FooWithoutValueEnum:FOO"',
+            FooWithoutValueEnum::FOO()->serialize(),
+            'The serialization is not valid.'
+        );
+
+        $this->assertSame(
+            'E:26:"FooWithValueStringEnum:BAR"',
+            FooWithValueStringEnum::BAR()->serialize(),
+            'The serialization is not valid.'
+        );
+    }
+
+    public function testGetUnserializeEnum(): void
+    {
+        $this->assertSame(
+            FooWithoutValueEnum::tryFrom(unserialize(serialize(FooWithoutValueEnum::BAR()))),
             FooWithoutValueEnum::BAR(),
             'The serialization did not go well.'
         );
