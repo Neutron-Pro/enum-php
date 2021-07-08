@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class EnumNormalizer implements NormalizerInterface, DenormalizerInterface
 {
-    /** @var string $className */
+    /** @var string|Enum $className */
     private $className;
 
     /**
@@ -60,9 +60,10 @@ class EnumNormalizer implements NormalizerInterface, DenormalizerInterface
      * @param string|null $format
      * @param array $context
      * @return object
+     * @throws \ReflectionException
      */
     public function denormalize($data, string $type, string $format = null, array $context = [])
     {
-        return $this->className::valueOf($data);
+        return $this->className::from($data);
     }
 }
