@@ -36,30 +36,13 @@ This enum does not require a constructor. We simply create a list of constants t
  * @method static self TWO()
  * @method static self THREE()
  */
-class MyEnum extends \NeutronStars\Enum\Enum
+class MyStringEnum extends \NeutronStars\Enum\Enum
 {
-   public const ONE   = 1;
-   public const TWO   = 2;
-   public const THREE = 3;
-   
-   /** @var int $value */
-   private $value;
-   
-   public function __construct(int $value)
-   {
-     $this->value = $value;
-   }
-   
-   public function getValue(): int
-   {
-     return $this->value;
-   }
+   public const ONE   = 'One';
+   public const TWO   = 'Two';
+   public const THREE = 'Three';
 }
 ```
-
-This enum must have a constructor with a parameter (of type integer in this example but it is possible to put other type).
-
-### Method 3
 
 ```php
 /**
@@ -67,159 +50,113 @@ This enum must have a constructor with a parameter (of type integer in this exam
  * @method static self TWO()
  * @method static self THREE()
  */
-class MyEnum extends \NeutronStars\Enum\Enum
+class MyIntEnum extends \NeutronStars\Enum\Enum
 {
-   public const ONE   = [1, 'One'];
-   public const TWO   = [2, 'Two'];
-   public const THREE = [3, 'Three'];
-   
-   /** @var int $value */
-   private $value;
-   
-   /** @var string $name */
-   private $name;
-   
-   public function __construct(int $value, string $name)
-   {
-     $this->value = $value;
-     $this->name = $name;
-   }
-   
-   public function getValue(): int
-   {
-     return $this->value;
-   }
-   
-   public function getName(): string
-   {
-     return $this->name;
-   }
+   public const ONE   = 1;
+   public const TWO   = 2;
+   public const THREE = 3;
 }
 ```
-
-This enum must have a constructor with as many parameters as there are values in the largest array in the list of constants.
 
 ---
 
 ## Use an Enum class:
 
-### Loop over all the constants of an enum.
-
-```php
-foreach (MyEnum::values() as $name => $instance) {
-  echo $name . ' = ' . $instance->getValue();
-}
-// OR
-MyEnum::forEach(function ($name, $instance) {
-  echo $name . ' = ' . $instance->getValue();
-});
-```
-
-- Result:
-
-```
-ONE = 1
-TWO = 2
-THREE = 3
-```
 
 ### Get instance of an enum
 
 ```php
-$two = MyEnum::TWO();
+$two = MyStringEnum::TWO();
 
-echo $two;
-echo $two->getName();
-echo $two->getValue();
-```
-
-- Result:
-
-```
-TWO
-Two
-2
+echo $two; // return TWO
+echo $two->key; // return TWO
+echo $two->value; // return Two
 ```
 
 ### Get instance of an enum from a string
 
 ```php
-$three = MyEnum::valueOf('THREE');
+$three = MyStringEnum::from('THREE');
 
-echo $three;
-echo $three->getName();
-echo $three->getValue();
-```
-
-- Result:
-
-```
-THREE
-Three
-3
+echo $three; // THREE
+echo $three->key; // return TWO
+echo $three->value; // return Two
 ```
 
 ### Compare the instances of an enum
 
 ```php
-$value = MyEnum::valueOf($_GET['number']);
-if ($value->equals(MyEnum::ONE())) {
+$value = MyStringEnum::tryFrom($_GET['number']);
+if ($value === MyStringEnum::ONE()) {
   echo 'The number is ONE !';
 }
 ```
-
-- Result:
+Result:
 
 ```
-if $_GET['number] is ONE then 'The number is ONE !'
+if $_GET['number] is ONE or One or 1 then 'The number is ONE !'
 else nothing.
 ```
 
-## Default enum value:
+---
 
-It is possible to create a constant to retrieve the value of an enumeration if it is not found.
+### Difference between `from` and `tryFrom`.
+
+If you use "tryFrom" and the parameter value is not found, the method returns null.
+
+If you use "from" and the value of the parameter is not found, an error of type ValueError is raised.
+
+---
+
+### Retrieve all keys of the enum.
 
 ```php
-/**
- * @method static self _DEFAULT()
- * @method static self ONE()
- * @method static self TWO()
- * @method static self THREE()
- */
-class MyEnum extends \NeutronStars\Enum\Enum
-{
-   public const _DEFAULT = 'TWO';
+$cases = MyIntEnum::cases();
+```
 
-   public const ONE = null;
-   public const TWO = null;
-   public const THREE = null;
+Result:
+
+```
+[
+  MyIntEnum::ONE(),
+  MyIntEnum::TWO(),
+  MyIntEnum::THREE() 
+]
+```
+
+```php
+foreach (MyIntEnum::cases() as $case) {
+    echo '- ' . $case->value;
 }
 ```
 
-### Get the value of _DEFAULT
+Result:
+
+```
+- 1
+- 2
+- 3
+```
+
+---
+
+### Serialization and Deserialization
+
+You can serialize an enum with the serialize function of PHP.
 
 ```php
-echo 'Default value: ' . MyEnum::_DEFAULT();
+$serialized = serialize(MyEnum::THREE());
 ```
 
-- Result:
-
-```
-Default value: TWO
-```
-
-### Get the value of _DEFAULT with the valueOf function
+But for deserialization, there will be a small difference, You must use the `from` or `tryFrom` method:
 
 ```php
-echo 'Default value: ' . MyEnum::valueOf('_DEFAULT');
-// OR
-echo 'Default value: ' . MyEnum::valueOf('A key that does not exist.');
+$deserialized = MyEnum::from(unserialize($deserialized));
+// $deserialized = MyEnum::THREE()
 ```
 
-- Result:
-
 ```
-Default value: TWO
+
 ```
 
 ---
@@ -241,7 +178,7 @@ class MyEnumType extends \NeutronStars\Enum\Types\EnumType {
   
   public function convertToPHPValue($value,\Doctrine\DBAL\Platforms\AbstractPlatform $platform): MyEnum
   {
-    return MyEnum::valueOf($value);
+    return MyEnum::from($value);
   }
 }
 ```
