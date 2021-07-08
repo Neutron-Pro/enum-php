@@ -2,8 +2,39 @@
 
 ## Installation:
 
+---
+
+### Only Enum PHP whiteout Doctrine and Symfony:
+
 ```
 composer require neutronstars/enum
+```
+
+---
+
+### For Doctrine
+
+```
+composer require neutronstars/doctrine-enum-php-type
+```
+
+> Docs: https://github.com/Neutron-Pro/doctrine-enum-php-type
+
+---
+
+### For Symfony
+
+```
+composer require neutronstars/symfony-normalizer-enum-php
+```
+
+> Docs: https://github.com/Neutron-Pro/symfony-normalizer-enum-php
+
+### For Symfony and Doctrine
+
+```
+composer require neutronstars/doctrine-enum-php-type
+composer require neutronstars/symfony-normalizer-enum-php
 ```
 
 ---
