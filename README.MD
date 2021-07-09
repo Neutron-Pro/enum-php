@@ -110,8 +110,8 @@ echo $two->value; // return Two
 $three = MyStringEnum::from('THREE');
 
 echo $three; // THREE
-echo $three->key; // return TWO
-echo $three->value; // return Two
+echo $three->key; // return THREE
+echo $three->value; // return Three
 ```
 
 ### Compare the instances of an enum
